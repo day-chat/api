@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
 import ChatRouter from './Controllers/main_controller.js';
 
 dotenv.config()
@@ -10,7 +11,9 @@ const app = express()
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(cookieParser())
 app.use('/api', ChatRouter)
+
 
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
