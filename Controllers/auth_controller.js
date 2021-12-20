@@ -33,7 +33,7 @@ const loginController = async (req, res) =>{
     if(!correctPassword) return res.status(401).json({ error: "the password you entered is incorrect" })
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY)
 
-    return res.cookie("access_token", token, { httpOnly: true }).status(200).json({ ...user._doc, token})
+    return res.cookie("access_token", token, { httpOnly: true, maxAge: 86400 }).status(200).json({ ...user._doc, token})
 }
 
 const authenticate = async (req, res, next) => {
