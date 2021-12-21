@@ -1,6 +1,7 @@
 import Message from "../Models/message_model.js"
 import userModel from "../Models/user_model.js"
 import Chat from '../Models/chat_model.js'
+import mongoose from "mongoose"
 
 const usersController = async (req, res) =>{
     const users = await userModel.find()
@@ -40,7 +41,26 @@ const sendMessageController = async (req, res) => {
    return res.status(201).json({ info: "sent message sucessfully", updated_message })
 }
 
+const deleteMessageController = async (req, res) => {    
+    const message_id = req.params.message_id
+    if(!message_id) return res.status(404).json({ error: "please enter a message to delete"})
 
+    const message_to_del = await Message.findById(message_id)
 
+    if(!message_to_del) return res.status(404).json({ error: "message not found"})
+    if(message_to_del.sender_id != req.user._id) return res.status(401).json({ error: "only sender can delete this message"})
 
-export { usersController, sendMessageController }
+    await Message.findByIdAndDelete(message_id).catch(err => { return res.status(401).json({ error: err.message }) })
+    
+    await Chat.findByIdAndUpdate(message_to_del.chat_id, { 
+        $pull: { unread: mongoose.mongo.ObjectId(message_id) }
+    }).catch(err => { return res.status(401).json({ error: err.message }) })
+
+    return res.status(200).json({ info: "deleted message successfully" })
+} 
+
+const testController = async (req, res) =>{
+    
+} 
+
+export { usersController, sendMessageController, deleteMessageController, testController }
