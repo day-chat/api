@@ -59,8 +59,28 @@ const deleteMessageController = async (req, res) => {
     return res.status(200).json({ info: "deleted message successfully" })
 } 
 
-const testController = async (req, res) =>{
-    
-} 
+const getChatMessageController = async (req, res) => {
+    const chat_id = req.params.id
+    if(!chat_id) return res.status(404).json({ error: "please enter a chat" })
 
-export { usersController, sendMessageController, deleteMessageController, testController }
+    const current_chat = await Chat.findById(chat_id)
+    if(!current_chat) return res.status(404).json({ error: "chat not found" })
+
+    const messages = await Message.find({ chat_id: chat_id })
+
+    let new_unread = []
+    
+    for(let i = 0; i < current_chat.unread.length; i ++){
+        let mess = await Message.findById(current_chat.unread[i])
+
+        if(mess.reciever_id != req.user._id) {
+            new_unread = [...new_unread, mess._id]
+        }
+    }
+
+   await Chat.findByIdAndUpdate(chat_id, { unread: new_unread }).catch(err => { return res.json({ error: err.message }).status(403) })
+
+   return res.status(200).json({ messages })
+}
+
+export { usersController, sendMessageController, deleteMessageController, getChatMessageController }
