@@ -5,6 +5,6 @@ const ChatSchema = new mongoose.Schema({
     unread: [],
 })
 
-const Chat = mongoose.model('chat', ChatSchema)
+const Chat = mongoose.model('chats', ChatSchema)
 
 export default Chat;
