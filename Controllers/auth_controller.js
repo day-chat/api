@@ -33,7 +33,7 @@ const loginController = async (req, res) =>{
     if(!correctPassword) return res.status(401).json({ error: "the password you entered is incorrect" })
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY)
 
-    return res.cookie("access_token", token, { httpOnly: true, maxAge: 86400 }).status(200).json({ ...user._doc, token})
+    return res.cookie("access_token", token, { httpOnly: true, maxAge: 86400 }).status(200).json({ id: user._id, email: user.email, username: user.username })
 }
 
 const authenticate = async (req, res, next) => {
@@ -45,8 +45,16 @@ const authenticate = async (req, res, next) => {
 
     req.user = user
 
-    next()
+    return next()
+}
+
+const getUserController = async (req, res) => {
+    return res.status(200).json({ id: req.user._id, email: req.user.email, username: req.user.username })
+} 
+
+const logoutController = async (req, res) => {
+    res.clearCookies().json({ info: "Logged out successfully" }).status(200)
 }
 
 export default authenticate
-export { loginController, registerController }
+export { loginController, registerController, getUserController, logoutController }

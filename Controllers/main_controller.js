@@ -1,5 +1,5 @@
 import express from 'express'
-import authenticate, { loginController, registerController } from './auth_controller.js'
+import authenticate, { getUserController, loginController, logoutController, registerController } from './auth_controller.js'
 import { 
     deleteMessageController, 
     getChatMessageController, 
@@ -10,6 +10,8 @@ const ChatRouter = express.Router()
 
 ChatRouter.post('/register', registerController)
 ChatRouter.post('/login', loginController)
+ChatRouter.get('/getUser', authenticate, getUserController)
+ChatRouter.get('/logout', authenticate, logoutController)
 
 ChatRouter.get('/users', authenticate, usersController)
 ChatRouter.post('/sendMessage', sendMessageController)
