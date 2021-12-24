@@ -53,7 +53,10 @@ const getUserController = async (req, res) => {
 } 
 
 const logoutController = async (req, res) => {
-    res.clearCookies().json({ info: "Logged out successfully" }).status(200)
+    const token = req.cookies.access_token
+    if(!token) return res.status(404).json({ error: "you have already logged out" })
+    
+    return res.clearCookie('access_token').json({ info: "Logged out successfully" }).status(200)
 }
 
 export default authenticate
